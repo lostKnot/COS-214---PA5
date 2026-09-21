@@ -1,0 +1,11 @@
+#ifndef INCIDENTEVENT_H
+#define INCIDENTEVENT_H
+
+enum IncidentEvent {
+	ESCALATED, 
+	RESOLVED, 
+	UNIT_ARRIVED, 
+	UNIT_UNAVAILABLE
+};
+
+#endif
