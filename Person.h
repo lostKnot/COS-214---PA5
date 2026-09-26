@@ -1,16 +1,23 @@
 #ifndef PERSON_H
 #define PERSON_H
 
-class Person : CampusComponent {
+#include "CampusComponent.h"
 
+// Leaf: a person has no children and nothing physical to lock, but still
+// implements the CampusComponent interface so Building can cascade
+// lock()/notify() over its children uniformly.
+class Person : public CampusComponent {
 public:
-	string cardID;
+    Person(const std::string& name, const std::string& cardID);
 
-	void lock();
+    void lock() override;
+    void unlock() override;
+    void notify(const std::string& msg) override;
 
-	void unlock();
+    std::string getCardID() const { return cardID; }
 
-	void notify(string msg);
+private:
+    std::string cardID;
 };
 
 #endif

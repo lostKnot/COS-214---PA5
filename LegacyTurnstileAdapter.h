@@ -1,14 +1,21 @@
 #ifndef LEGACYTURNSTILEADAPTER_H
 #define LEGACYTURNSTILEADAPTER_H
 
-class LegacyTurnstileAdapter : AccessGate {
+#include "AccessGate.h"
+#include "LegacyTurnstile.h"
 
+// Adapter: translates the AccessGate interface the rest of the system
+// expects into the specific calls the legacy device actually understands.
+class LegacyTurnstileAdapter : public AccessGate {
 public:
-	LegacyTurnstile* device;
+    explicit LegacyTurnstileAdapter(LegacyTurnstile* device);
+    ~LegacyTurnstileAdapter();
 
-	void engage();
+    void engage() override;
+    void release() override;
 
-	void release();
+private:
+    LegacyTurnstile* device;
 };
 
 #endif

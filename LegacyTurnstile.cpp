@@ -1,11 +1,11 @@
 #include "LegacyTurnstile.h"
+#include <iostream>
 
 void LegacyTurnstile::sendSignal(int freq, char flag) {
-	// TODO - implement LegacyTurnstile::sendSignal
-	throw "Not yet implemented";
+    std::cout << "[LegacyTurnstile] signal sent (freq=" << freq
+              << ", flag=" << flag << ")\n";
 }
 
 void LegacyTurnstile::cutPowerFeed() {
-	// TODO - implement LegacyTurnstile::cutPowerFeed
-	throw "Not yet implemented";
+    std::cout << "[LegacyTurnstile] power feed cut\n";
 }
