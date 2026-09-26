@@ -5,9 +5,7 @@ class CommsDesk : ResponseUnit {
 
 public:
 	UnitType getType();
-
 	void respond(Incident* inc, IncidentEvent e);
-
 	void broadcast(string msg);
 };
 

@@ -3,12 +3,9 @@
 
 class FacilitiesStaff : ResponseUnit {
 
-
 public:
 	UnitType getType();
-
 	void respond(Incident* inc, IncidentEvent e);
-
 	void isolateHazard(Incident* inc);
 };
 

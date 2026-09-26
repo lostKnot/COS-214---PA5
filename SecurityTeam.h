@@ -3,12 +3,9 @@
 
 class SecurityTeam : ResponseUnit {
 
-
 public:
 	UnitType getType();
-
 	void respond(Incident* inc, IncidentEvent e);
-
 	void patrol(Incident* inc);
 };
 
