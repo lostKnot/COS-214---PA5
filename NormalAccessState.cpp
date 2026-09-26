@@ -1,16 +1,40 @@
+#include <iostream>
+
 #include "NormalAccessState.h"
+#include "CampusComponent.h"
+#include "LockedAccessState.h"
+
+//---------------------------------------------------------
 
 void NormalAccessState::lock(CampusComponent* c) {
-	// TODO - implement NormalAccessState::lock
-	throw "Not yet implemented";
+	
+    if (!c) {
+            std::cout << "Invalid CampusComponent\n";
+            return;
+        }
+
+        std::cout << "[NormalAccessState] Locking component: " << c->getName() << "\n";
+        c->setAccess(new LockedAccessState());
+    delete this;
 }
+
+//---------------------------------------------------------
 
 void NormalAccessState::unlock(CampusComponent* c) {
-	// TODO - implement NormalAccessState::unlock
-	throw "Not yet implemented";
+	
+    if (!c) {
+            std::cout << "Invalid CampusComponent\n";
+            return;
+        }
+
+    std::cout << "[NormalAccessState] Componnet: " << c->getName() << " is already unlocked. \n";
 }
 
-string NormalAccessState::getStatus() {
-	// TODO - implement NormalAccessState::getStatus
-	throw "Not yet implemented";
+//---------------------------------------------------------
+
+std::string NormalAccessState::getStatus() {
+    
+    return "State: NormalAccess" ;
 }
+
+//---------------------------------------------------------

@@ -3,7 +3,6 @@
 
 class CommsDesk : ResponseUnit {
 
-
 public:
 	UnitType getType();
 

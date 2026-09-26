@@ -3,6 +3,8 @@
 
 #include <string>
 
+class AccessState;
+
 // Component (GoF Composite pattern).
 // Both individual campus elements (leaves) and groups of elements
 // (composites, e.g. buildings) are treated uniformly through this interface.
@@ -21,8 +23,10 @@ public:
     virtual void add(CampusComponent* c) { (void)c; }
     virtual void remove(CampusComponent* c) { (void)c; }
     virtual CampusComponent* getChild(int i) { (void)i; return nullptr; }
-
+    
     std::string getName() const { return name; }
+    
+    virtual void setAccess(AccessState* s) {}
 
 protected:
     std::string name;

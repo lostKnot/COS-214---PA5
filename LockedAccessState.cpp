@@ -1,16 +1,40 @@
-#include "../../CLionProjects/COS 214 - PA5/LockedAccessState.h"
+#include <iostream>
+
+#include "CampusComponent.h"
+#include "LockedAccessState.h"
+#include "NormalAccessState.h"
+
+//---------------------------------------------------------
 
 void LockedAccessState::lock(CampusComponent* c) {
-	// TODO - implement LockedAccessState::lock
-	throw "Not yet implemented";
+	
+    if (!c) {
+            std::cout << "Invalid CampusComponent\n";
+            return;
+        }
+
+    std::cout << "[LockedAccessState] Componnet: " << c->getName() << " is already locked. \n";
 }
+
+//---------------------------------------------------------
 
 void LockedAccessState::unlock(CampusComponent* c) {
-	// TODO - implement LockedAccessState::unlock
-	throw "Not yet implemented";
+	
+    if (!c) {
+            std::cout << "Invalid CampusComponent\n";
+            return;
+        }
+
+        std::cout << "[LockedAccessState] Unlocking component: " << c->getName() << "\n";
+        c->setAccess(new NormalAccessState());
+    delete this;
 }
 
-string LockedAccessState::getStatus() {
-	// TODO - implement LockedAccessState::getStatus
-	throw "Not yet implemented";
+//---------------------------------------------------------
+
+std::string LockedAccessState::getStatus() {
+	
+    return "State: LockedAccess" ;
 }
+
+//---------------------------------------------------------

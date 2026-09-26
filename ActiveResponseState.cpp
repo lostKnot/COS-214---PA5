@@ -1,16 +1,66 @@
+#include <iostream>
+
 #include "ActiveResponseState.h"
+#include "Incident.h"
+#include "ResponseCoordinator.h"
+#include "IncidentEvent.h"
+#include "ResolvedState.h"
+
+//---------------------------------------------------------
 
 void ActiveResponseState::escalate(Incident* inc) {
-	// TODO - implement ActiveResponseState::escalate
-	throw "Not yet implemented";
+	
+    if(!inc) {
+        std::cout << "Invalid Incident" << "\n";
+        return;
+    }
+    
+    inc->setSeverity(inc->getSeverity()+1);
+    std::cout << "[ActiveResponseState] Incident: " << inc->getID() << " escalated to severity level: " << inc->getSeverity() << "\n";
+    
+    ResponseCoordinator* coord = inc->getCoordinator();
+    if(coord){
+        coord->incidentChanged(inc, ESCALATED);
+    }
+    else{
+        std::cout << "No ResponseCoordinator attached to Incident" << "\n";
+    }
 }
+
+//---------------------------------------------------------
 
 void ActiveResponseState::resolve(Incident* inc) {
-	// TODO - implement ActiveResponseState::resolve
-	throw "Not yet implemented";
+	
+    if(!inc) {
+        std::cout << "Invalid Incident" << "\n";
+        return;
+    }
+    
+    ResponseCoordinator* coord = inc->getCoordinator();
+    if(coord){
+        coord->incidentChanged(inc, RESOLVED);
+    }
+    else{
+        std::cout << "No ResponseCoordinator attached to Incident" << "\n";
+    }
+    
+    inc->setState(new ResolvedState());
 }
 
+//---------------------------------------------------------
+
 void ActiveResponseState::getStatus(Incident* inc) {
-	// TODO - implement ActiveResponseState::getStatus
-	throw "Not yet implemented";
+	
+    if(!inc) {
+        std::cout << "Invalid Incident" << "\n";
+        return;
+    }
+    
+    std::cout << "===== Status of Incident: =====" << std::endl;
+    std::cout << "ID: " << inc->getID() << std::endl;
+    std::cout << "Description: " << inc->getDescription() << std::endl;
+    std::cout << "State: ActiveResponse"<< std::endl;
+    std::cout << "Severity: " << inc->getSeverity() << std::endl;
 }
+
+//---------------------------------------------------------
