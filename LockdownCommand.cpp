@@ -1,11 +1,29 @@
 #include "LockdownCommand.h"
 
+//---------------------------------------------------------
+
 void LockdownCommand::execute() {
-	// TODO - implement LockdownCommand::execute
-	throw "Not yet implemented";
+	
+    if (!target) {
+        std::cout << "[LockdownCommand] Error: Target CampusComponent is null.\n";
+        return;
+    }
+
+    std::cout << "[LockdownCommand] Executing lockdown on: " << target->getName() << "\n";
+    target->lock();
 }
 
+//---------------------------------------------------------
+
 void LockdownCommand::undo() {
-	// TODO - implement LockdownCommand::undo
-	throw "Not yet implemented";
+	
+    if (!target) {
+        std::cout << "[LockdownCommand] Error: Target CampusComponent is null.\n";
+        return;
+    }
+
+    std::cout << "[LockdownCommand] Undoing lockdown on: " << target->getName() << "\n";
+    target->unlock();
 }
+
+//---------------------------------------------------------

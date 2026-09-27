@@ -1,14 +1,17 @@
 #ifndef OPERATORCONSOLE_H
 #define OPERATORCONSOLE_H
 
+#include <iostream>
+#include <vector>
+class Command;
+
 class OperatorConsole {
 
 private:
-	vector<Command*> history;
+	std::vector<Command*> history;
 
 public:
 	void issue(Command* cmd);
-
 	void undoLast();
 };
 

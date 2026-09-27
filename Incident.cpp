@@ -1,20 +1,46 @@
 #include "Incident.h"
 
 void Incident::setState(IncidentState* s) {
-	this->state = s;
+    
+    if (this->state != s) {
+            delete this->state;
+            this->state = s;
+        }
 }
 
-void Incident::escalate() {
-	// TODO - implement Incident::escalate
-	throw "Not yet implemented";
+//---------------------------------------------------------
+
+void Incident::setSeverity(int sev){
+    
+    this->severity = sev;
 }
 
-void Incident::resolve() {
-	// TODO - implement Incident::resolve
-	throw "Not yet implemented";
+//---------------------------------------------------------
+
+int Incident::getID() {
+    
+    return this->id;
 }
 
-string Incident::getStatus() {
-	// TODO - implement Incident::getStatus
-	throw "Not yet implemented";
+//---------------------------------------------------------
+
+int Incident::getSeverity() {
+    
+    return this->severity;
 }
+
+//---------------------------------------------------------
+
+ResponseCoordinator* Incident::getCoordinator(){
+    
+    return this->coordinator;
+}
+
+//---------------------------------------------------------
+
+std::string Incident::getDescription(){
+    
+    return this->description;
+}
+
+//---------------------------------------------------------

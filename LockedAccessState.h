@@ -1,15 +1,16 @@
 #ifndef LOCKEDACCESSSTATE_H
 #define LOCKEDACCESSSTATE_H
+#include <string>
+#include "AccessState.h"
 
-class LockedAccessState : AccessState {
+class CampusComponent;
 
+class LockedAccessState : public AccessState {
 
 public:
 	void lock(CampusComponent* c);
-
 	void unlock(CampusComponent* c);
-
-	string getStatus();
+	std::string getStatus();
 };
 
 #endif

@@ -17,13 +17,9 @@ public:
 	ResponseUnit(string name, ResponseCoordinator* coordinator);
 
 	virtual UnitType getType() = 0;
-
 	virtual void respond(Incident* inc, IncidentEvent e) = 0;
-
 	void report(Incident* inc, IncidentEvent e);
-
 	bool isAvailable();
-
 	string getName();
 
 	virtual ~ResponseUnit() = default;
