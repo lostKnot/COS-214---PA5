@@ -6,7 +6,7 @@ class CampusEmergencyFacade {
 private:
 	CampusComponent* root;
 	OperatorConsole* console;
-	ResponseCoordinator coordinator;
+	ResponseCoordinator* coordinator;
 
 public:
 	void lockdown(CampusComponent* area, Incident* inc);

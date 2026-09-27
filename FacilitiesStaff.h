@@ -1,13 +1,17 @@
 #ifndef FACILITIESSTAFF_H
 #define FACILITIESSTAFF_H
 
+#include "ResponseUnit.h"
+
 class FacilitiesStaff : ResponseUnit {
 
 
 public:
-	UnitType getType();
+	FacilitiesStaff(string name, ResponseCoordinator* coordinator) : ResponseUnit(name, coordinator) {};
 
-	void respond(Incident* inc, IncidentEvent e);
+	UnitType getType() override;
+
+	void respond(Incident* inc, IncidentEvent e) override;
 
 	void isolateHazard(Incident* inc);
 };
