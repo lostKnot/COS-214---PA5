@@ -8,7 +8,7 @@
 #include "ResponseCoordinator.h"
 #include "UnitType.h"
 
-class DispatchCommand : Command {
+class DispatchCommand : public Command {
 
 private:
 	ResponseCoordinator* coordinator;
