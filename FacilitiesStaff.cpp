@@ -1,16 +1,20 @@
 #include "FacilitiesStaff.h"
 
 UnitType FacilitiesStaff::getType() {
-	// TODO - implement FacilitiesStaff::getType
-	throw "Not yet implemented";
+	return UnitType::FACILITIES;
 }
 
-void FacilitiesStaff::respond(Incident* inc, IncidentEvent e) {
-	// TODO - implement FacilitiesStaff::respond
-	throw "Not yet implemented";
+void FacilitiesStaff::respond(Incident* inc, IncidentEvent e)
+{
+	if (inc == nullptr)
+		return;
+	if (e == IncidentEvent::UNIT_ARRIVED || e == IncidentEvent::ESCALATED)
+	{
+		isolateHazard(inc);
+	}
 }
 
 void FacilitiesStaff::isolateHazard(Incident* inc) {
-	// TODO - implement FacilitiesStaff::isolateHazard
-	throw "Not yet implemented";
+	cout << name << " is isolating the hazard." << endl;
+	available = false;
 }

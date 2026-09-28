@@ -1,11 +1,22 @@
 #include "CampusEmergencyFacade.h"
 
-void CampusEmergencyFacade::lockdown(CampusComponent* area, Incident* inc) {
-	// TODO - implement CampusEmergencyFacade::lockdown
-	throw "Not yet implemented";
+void CampusEmergencyFacade::lockdown(CampusComponent* area, Incident* inc)
+{
+	if (area == nullptr || inc == nullptr)
+	{
+		return;
+	}
+
+	console->issue(new LockdownCommand(area));
+	console->issue(new DispatchCommand(coordinator, inc, UnitType::SECURITY));
 }
 
-void CampusEmergencyFacade::resolveEmergency(CampusComponent* area, Incident* inc) {
-	// TODO - implement CampusEmergencyFacade::resolveEmergency
-	throw "Not yet implemented";
+void CampusEmergencyFacade::resolveEmergency(CampusComponent* area, Incident* inc)
+{
+	if (area == nullptr || inc == nullptr)
+	{
+		return;
+	}
+	console->issue(new UnlockCommand(area));
+	inc->resolve();
 }

@@ -1,8 +1,13 @@
 #include "ResponseUnit.h"
 
+ResponseUnit::ResponseUnit(string name, ResponseCoordinator* coordinator) {
+	this->name = name;
+	this->coordinator = coordinator;
+	this->available = true;
+}
+
 void ResponseUnit::report(Incident* inc, IncidentEvent e) {
-	// TODO - implement ResponseUnit::report
-	throw "Not yet implemented";
+	coordinator->notify(this, e, inc);
 }
 
 bool ResponseUnit::isAvailable() {
