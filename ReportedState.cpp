@@ -2,6 +2,7 @@
 
 #include "ReportedState.h"
 #include "Incident.h"
+#include "ActiveResponseState.h"
 #include "ResponseCoordinator.h"
 #include "IncidentEvent.h"
 #include "ResolvedState.h"
@@ -15,8 +16,9 @@ void ReportedState::escalate(Incident* inc) {
         return;
     }
     
+    
     inc->setSeverity(inc->getSeverity()+1);
-    std::cout << "[ReportedState] Incident: " << inc->getID() << " escalated to severity level: " << inc->getSeverity() << "\n";
+    std::cout << "[ReportedState -> ActiveResponseState] Incident: " << inc->getID() << " escalated to severity level: " << inc->getSeverity() << "\n";
     
     ResponseCoordinator* coord = inc->getCoordinator();
     if(coord){
@@ -25,6 +27,9 @@ void ReportedState::escalate(Incident* inc) {
     else{
         std::cout << "No ResponseCoordinator attached to Incident" << "\n";
     }
+    
+    inc->setState(new ActiveResponseState());
+    std::cout << "[ReportedState -> ActiveResponseState]: Incident has been moved to active response \n";
 }
 
 //---------------------------------------------------------
