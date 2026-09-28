@@ -1,1 +1,68 @@
+# CampusGuard — COS 214 Practical 5
 
+## Team
+- Lizalise — Composite, Adapter, Task 5
+- Sudud — UML class diagram, Command/Mediator/Facade, main.cpp
+- Christian — Task 3, 4, Facade and Mediator
+
+## System Description
+CampusGuard is a campus emergency-response system. It coordinates incident
+reporting, response team dispatch, and building access control across a
+hierarchy of buildings, access points, and legacy hardware.
+
+## Design Patterns Used
+- **Command** — LockdownCommand, UnlockCommand, DispatchCommand issued via OperatorConsole
+- **Mediator** — ResponseCoordinator / ControlCentre coordinates response units
+- **Facade** — CampusEmergencyFacade simplifies lockdown/resolve operations
+- **Adapter** — LegacyTurnstileAdapter wraps LegacyTurnstile to satisfy AccessGate
+- **Composite** — CampusComponent/Building/AccessPoint/Person hierarchy
+- **State** — AccessState (Normal/Locked) and IncidentState (Reported/ActiveResponse/Resolved)
+
+## Build and Run (Docker — required for demo)
+```
+docker compose up --build
+```
+This builds the image from scratch and runs the application. Docker must
+build the image live during the demo — no pre-built local executable is used.
+
+## Build and Run (local)
+```
+make
+./CampusGuard
+```
+
+## Rebuilding after changes
+```
+make clean && make
+```
+
+## Valgrind (inside Docker)
+```
+docker compose run --rm campusguard valgrind --leak-check=full --track-origins=yes ./CampusGuard
+```
+Or locally, using the Makefile's built-in target:
+```
+make valgrind
+```
+
+## GDB Investigation
+Start GDB inside the container:
+```
+docker compose run --rm campusguard gdb ./CampusGuard
+```
+See `GDB_INVESTIGATION.md` for the specific bug traced, the commands used,
+and the fix applied.
+
+## Ownership and Memory Management Policy
+- `Building` owns its children (`std::vector<CampusComponent*>`) and deletes
+  them in its destructor.
+- `AccessPoint` owns its `AccessGate*` and deletes it in its destructor.
+- `LegacyTurnstileAdapter` owns the wrapped `LegacyTurnstile*` and deletes it
+  in its destructor.
+- [Add: who owns ResponseUnit objects, Incident objects, and State objects —
+  fill in once Command/Mediator/State code is finalized.]
+
+## Git/GitHub
+Repository: [link]
+All three team members have contributed via commits to their respective
+pattern implementations.
