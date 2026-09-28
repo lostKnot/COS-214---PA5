@@ -3,7 +3,7 @@
 
 #include "ResponseUnit.h"
 
-class FacilitiesStaff : ResponseUnit {
+class FacilitiesStaff : public ResponseUnit {
 
 
 public:

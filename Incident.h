@@ -2,9 +2,10 @@
 #define INCIDENT_H
 
 #include <string>
-#include "IncidentState.h"
-#include "CampusComponent.h"
-#include "ResponseCoordinator.h"
+
+class ResponseCoordinator;
+class CampusComponent;
+class IncidentState;
 
 class Incident {
 
@@ -12,18 +13,20 @@ private:
 	int id;
 	std::string description;
 	int severity = 0;
-	CampusComponent* location;
-	IncidentState* state;
-	ResponseCoordinator* coordinator;
+	CampusComponent* location = nullptr;
+	IncidentState* state = nullptr;
+	ResponseCoordinator* coordinator = nullptr;
 
 public:
+    Incident(int id, const std::string& desc, int sev, CampusComponent* loc, IncidentState* st, ResponseCoordinator* coord);
+    virtual ~Incident();
 	void setState(IncidentState* s);
     void setSeverity(int sev);
-	virtual void escalate() = 0;
-    virtual void resolve() = 0;
+	virtual void escalate();
+    virtual void resolve();
     int getID();
     int getSeverity();
-    virtual std::string getStatus() = 0;
+    virtual std::string getStatus();
     std::string getDescription();
     ResponseCoordinator* getCoordinator();
     

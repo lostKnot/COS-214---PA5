@@ -3,7 +3,7 @@
 
 #include "ResponseUnit.h"
 
-class CommsDesk : ResponseUnit {
+class CommsDesk : public ResponseUnit {
 
 
 public:

@@ -1,5 +1,3 @@
-int main() {
-
 #include <iostream>
 
 #include "CampusComponent.h"
@@ -69,15 +67,63 @@ int main() {
     
     std::cout << "===== Scenario 1 ===== \n";
 
+    LegacyTurnstile* oldTurnstile = new LegacyTurnstile();
+    AccessGate* adaptedGate = new LegacyTurnstileAdapter(oldTurnstile);
+    Pros->setGate(adaptedGate);
+
+    Hat->setAccess(new NormalAccessState());
+    Pros->setAccess(new NormalAccessState());
+    Lyn->setAccess(new NormalAccessState());
+
+    ControlCentre* hub = new ControlCentre();
+    SecurityTeam* secAlpha = new SecurityTeam("Security-Alpha", hub);
+    MedicalResponder* medBeta = new MedicalResponder("Medical-Beta", hub);
+
+    hub->registerUnit(secAlpha);
+    hub->registerUnit(medBeta);
+
+    OperatorConsole console;
+
+    Incident* intrusion = new Incident(101, "Unauthorized breach at IT Building", 4, IT, new ReportedState(), hub);
+    std::cout << intrusion->getStatus() << "\n";
+
+    intrusion->escalate();
+    std::cout << intrusion->getStatus() << "\n";
+
+    Command* lockCmd = new LockdownCommand(Hat);
+    console.issue(lockCmd);
+
+    Command* dispatchCmd = new DispatchCommand(hub, intrusion, UnitType::SECURITY);
+    console.issue(dispatchCmd);
+
+    Hat->notify("Lockdown active: Security dispatched to IT Building.");
+
+    intrusion->resolve();
+    std::cout << intrusion->getStatus() << "\n";
+
+    console.undoLast();
+    console.undoLast();
+
+    delete adaptedGate;
+    delete oldTurnstile;
+    delete secAlpha;
+    delete medBeta;
+    delete hub;
+    delete intrusion;
     
+    //---------------------------------------------------------------------------------
     
     std::cout << "===== Scenario 2 ===== \n";
 
     
-    return 0;
-}
     
-    
+    //---------------------------------------------------------------------------------
+
+    Hat->remove(IT);
+    Hat->remove(SC);
+    delete IT;
+    delete SC;
+    delete Hat;
     
     return 0;
 }

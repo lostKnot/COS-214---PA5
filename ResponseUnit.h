@@ -1,10 +1,13 @@
 #ifndef RESPONSEUNIT_H
 #define RESPONSEUNIT_H
-#include "ResponseCoordinator.h"
 #include "UnitType.h"
 #include <string>
 #include <iostream>
 using namespace std;
+
+class ResponseCoordinator;
+class IncidentEvent;
+class Incident;
 
 class ResponseUnit {
 

@@ -3,7 +3,7 @@
 
 #include "ResponseUnit.h"
 
-class MedicalResponder : ResponseUnit {
+class MedicalResponder : public ResponseUnit {
 
 
 public:

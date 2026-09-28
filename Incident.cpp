@@ -1,5 +1,24 @@
 #include "Incident.h"
 
+//---------------------------------------------------------
+
+Incident::Incident(int id, const std::string& desc, int sev, CampusComponent* loc, IncidentState* st, ResponseCoordinator* coord)
+    : id(id),
+      description(desc),
+      severity(sev),
+      location(loc),
+      state(st),
+      coordinator(coord) {
+}
+
+//---------------------------------------------------------
+
+Incident::~Incident() {
+    delete state;
+}
+
+//---------------------------------------------------------
+
 void Incident::setState(IncidentState* s) {
     
     if (this->state != s) {

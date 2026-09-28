@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-class ControlCentre : ResponseCoordinator {
+class ControlCentre : public ResponseCoordinator {
 
 public:
 	vector<ResponseUnit*> units;

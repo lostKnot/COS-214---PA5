@@ -2,6 +2,7 @@
 #define RESOLVEDSTATE_H
 #include "AccessState.h"
 #include "Incident.h"
+#include "IncidentState.h"
 
 class ResolvedState : public IncidentState {
 
