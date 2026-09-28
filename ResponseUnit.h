@@ -1,13 +1,14 @@
 #ifndef RESPONSEUNIT_H
 #define RESPONSEUNIT_H
 #include "UnitType.h"
+#include "IncidentEvent.h"
+#include "ResponseCoordinator.h" 
 #include <string>
 #include <iostream>
 using namespace std;
 
-class ResponseCoordinator;
-class IncidentEvent;
-class Incident;
+class ResponseCoordinator; // forward declaration - only used as a pointer here
+class Incident;            // forward declaration - only used as a pointer here
 
 class ResponseUnit {
 

@@ -1,129 +1,97 @@
 #include <iostream>
 
-#include "CampusComponent.h"
 #include "Building.h"
 #include "AccessPoint.h"
 #include "Person.h"
 #include "NormalAccessState.h"
-#include "LockedAccessState.h"
-#include "Incident.h"
-#include "ReportedState.h"
-#include "AccessGate.h"
+
 #include "LegacyTurnstile.h"
 #include "LegacyTurnstileAdapter.h"
-#include "Command.h"
+
 #include "OperatorConsole.h"
-#include "LockdownCommand.h"
-#include "DispatchCommand.h"
 #include "ControlCentre.h"
 #include "SecurityTeam.h"
 #include "MedicalResponder.h"
-#include "UnitType.h"
+
+#include "CampusEmergencyFacade.h"
+
+#include "Incident.h"
+#include "ReportedState.h"
+#include "ActiveResponseState.h"
+
+using namespace std;
 
 int main() {
-    
-    //---------------------------------------------------------------------------------
-    // Setting up objects for testing
-    //---------------------------------------------------------------------------------
 
-    // initialising Campus
-    Building* Hat = new Building("Hatfield Campus");
-    
-    // initialisng places on campus
-    Building* Cent = new Building("Centenary");
-    Building* IT = new Building("IT Building");
-    Building* InfLab = new Building("Informatorium labs");
-    Building* Thuto = new Building("Thuto");
-    Building* SC = new Building("Student Center");
-    Building* BM = new Building("Bookmark");
-    Building* Shops = new Building("Shops");
-    
-    // initialising people
-    Person* S = new Person("Sudud","25");
-    Person* C = new Person("Christian","24");
-    Person* L = new Person("Lizalise","23");
-    
-    // initialisng access points
-    AccessPoint* Pros = new AccessPoint("Prospect St");
-    AccessPoint* Lyn = new AccessPoint("Lynwood Rd");
+    cout << " SCENARIO 1: Incident reported, campus locked down, units dispatched \n\n";
 
-    // sorting the buildings into a hierarchy tree
-    InfLab->add(C);
-    Cent->add(L);
-    BM->add(S);
-    
-    IT->add(InfLab);
-    SC->add(BM);
-    SC->add(Shops);
-    
-    Hat->add(Cent);
-    Hat->add(IT);
-    Hat->add(Thuto);
-    Hat->add(SC);
-    Hat->add(Pros);
-    Hat->add(Lyn);
+    //  Composite: build the campus hierarchy ---
+    Building* campus = new Building("Main Campus");
+    Building* scienceBlock = new Building("Science Block");
+    AccessPoint* frontDoor = new AccessPoint("Science Block Front Door");
+    Person* alice = new Person("Alice", "CARD-001");
 
-    //---------------------------------------------------------------------------------
-    
-    std::cout << "===== Scenario 1 ===== \n";
+    frontDoor->setAccess(new NormalAccessState());
 
-    LegacyTurnstile* oldTurnstile = new LegacyTurnstile();
-    AccessGate* adaptedGate = new LegacyTurnstileAdapter(oldTurnstile);
-    Pros->setGate(adaptedGate);
+    //  Adapter: wrap the legacy turnstile so it satisfies AccessGate ---
+    LegacyTurnstile* legacyDevice = new LegacyTurnstile();
+    LegacyTurnstileAdapter* adaptedGate = new LegacyTurnstileAdapter(legacyDevice);
+    frontDoor->setGate(adaptedGate);
 
-    Hat->setAccess(new NormalAccessState());
-    Pros->setAccess(new NormalAccessState());
-    Lyn->setAccess(new NormalAccessState());
+    scienceBlock->add(frontDoor);
+    scienceBlock->add(alice);
+    campus->add(scienceBlock);
 
-    ControlCentre* hub = new ControlCentre();
-    SecurityTeam* secAlpha = new SecurityTeam("Security-Alpha", hub);
-    MedicalResponder* medBeta = new MedicalResponder("Medical-Beta", hub);
+    //  Mediator: response coordinator with registered units ---
+    ControlCentre* coordinator = new ControlCentre();
+    SecurityTeam* security = new SecurityTeam("Security Team A", coordinator);
+    MedicalResponder* medic = new MedicalResponder("Medic Team A", coordinator);
+    coordinator->registerUnit(security);
+    coordinator->registerUnit(medic);
 
-    hub->registerUnit(secAlpha);
-    hub->registerUnit(medBeta);
+    // Command: operator console issues/tracks commands ---
+    OperatorConsole* console = new OperatorConsole();
 
-    OperatorConsole console;
+    // Facade: simplifies lockdown/resolve for the operator ---
+    CampusEmergencyFacade* facade = new CampusEmergencyFacade(campus, console, coordinator);
 
-    Incident* intrusion = new Incident(101, "Unauthorized breach at IT Building", 4, IT, new ReportedState(), hub);
-    std::cout << intrusion->getStatus() << "\n";
+    // State: incident starts in the Reported state ---
+    Incident* incident = new Incident(
+        1,
+        "Suspicious device reported in Science Block",
+        1,
+        scienceBlock,
+        new ReportedState(),
+        coordinator
+    );
 
-    intrusion->escalate();
-    std::cout << intrusion->getStatus() << "\n";
+    cout << "\n-- Facade triggers lockdown: issues Lockdown + Dispatch commands --\n";
+    facade->lockdown(scienceBlock, incident);
 
-    Command* lockCmd = new LockdownCommand(Hat);
-    console.issue(lockCmd);
+    cout << "\n-- Incident moves to ActiveResponse now that units are dispatched --\n";
+    incident->setState(new ActiveResponseState());
+    incident->getStatus();
 
-    Command* dispatchCmd = new DispatchCommand(hub, intrusion, UnitType::SECURITY);
-    console.issue(dispatchCmd);
+    cout << "\n-- Incident escalates: State delegates to ResponseCoordinator (Mediator) --\n";
+    incident->escalate();
 
-    Hat->notify("Lockdown active: Security dispatched to IT Building.");
+    cout << "\n SCENARIO 2: Emergency resolved, campus unlocked \n\n";
 
-    intrusion->resolve();
-    std::cout << intrusion->getStatus() << "\n";
+    cout << "Facade resolves the emergency: issues Unlock command, resolves incident\n";
+    facade->resolveEmergency(scienceBlock, incident);
+    incident->getStatus();
 
-    console.undoLast();
-    console.undoLast();
+    cout << "\n Operator undoes the last command issued (the unlock) \n";
+    console->undoLast();
 
-    delete adaptedGate;
-    delete oldTurnstile;
-    delete secAlpha;
-    delete medBeta;
-    delete hub;
-    delete intrusion;
-    
-    //---------------------------------------------------------------------------------
-    
-    std::cout << "===== Scenario 2 ===== \n";
+    cout << "\n Cleanup \n";
+    delete facade;
+    delete incident;
+    delete console;
+    delete coordinator;
+    delete security;
+    delete medic;
+    delete campus; // recursively deletes scienceBlock, frontDoor, alice
 
-    
-    
-    //---------------------------------------------------------------------------------
-
-    Hat->remove(IT);
-    Hat->remove(SC);
-    delete IT;
-    delete SC;
-    delete Hat;
-    
     return 0;
 }

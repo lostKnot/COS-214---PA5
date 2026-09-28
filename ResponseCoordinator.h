@@ -1,10 +1,11 @@
 #ifndef RESPONSECOORDINATOR_H
 #define RESPONSECOORDINATOR_H
 
-#include  "ResponseUnit.h"
-#include "Incident.h"
 #include "UnitType.h"
 #include "IncidentEvent.h"
+
+class ResponseUnit; // forward declaration - only used as a pointer here
+class Incident;     // forward declaration - only used as a pointer here
 
 class ResponseCoordinator {
 

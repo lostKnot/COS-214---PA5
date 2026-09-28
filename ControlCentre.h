@@ -2,6 +2,7 @@
 #define CONTROLCENTRE_H
 
 #include  "ResponseCoordinator.h"
+#include "ResponseUnit.h"
 #include <vector>
 #include <iostream>
 using namespace std;

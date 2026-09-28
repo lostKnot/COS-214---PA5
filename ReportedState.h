@@ -2,8 +2,6 @@
 #define REPORTEDSTATE_H
 #include "AccessState.h"
 #include "Incident.h"
-#include "IncidentState.h"
-
 
 class ReportedState : public IncidentState {
 

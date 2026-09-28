@@ -1,24 +1,5 @@
 #include "Incident.h"
 
-//---------------------------------------------------------
-
-Incident::Incident(int id, const std::string& desc, int sev, CampusComponent* loc, IncidentState* st, ResponseCoordinator* coord)
-    : id(id),
-      description(desc),
-      severity(sev),
-      location(loc),
-      state(st),
-      coordinator(coord) {
-}
-
-//---------------------------------------------------------
-
-Incident::~Incident() {
-    delete state;
-}
-
-//---------------------------------------------------------
-
 void Incident::setState(IncidentState* s) {
     
     if (this->state != s) {
@@ -63,3 +44,12 @@ std::string Incident::getDescription(){
 }
 
 //---------------------------------------------------------
+Incident::Incident(int id, const std::string& description, int severity,
+                    CampusComponent* location, IncidentState* initialState,
+                    ResponseCoordinator* coordinator)
+    : id(id), description(description), severity(severity),
+      location(location), state(initialState), coordinator(coordinator) {}
+
+void Incident::escalate() { if (state) state->escalate(this); }
+void Incident::resolve()  { if (state) state->resolve(this); }
+std::string Incident::getStatus() { if (state) state->getStatus(this); return ""; }
