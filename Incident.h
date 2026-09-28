@@ -11,7 +11,7 @@ class Incident {
 private:
 	int id;
 	std::string description;
-	int severity;
+	int severity = 0;
 	CampusComponent* location;
 	IncidentState* state;
 	ResponseCoordinator* coordinator;

@@ -18,7 +18,7 @@ public:
     void unlock() override;
     void notify(const std::string& msg) override;
 
-    void setAccess(AccessState* s);
+    void setAccess(AccessState* s) override;
     void setGate(AccessGate* g); // 0..1 gate
 
 private:
