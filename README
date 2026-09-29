@@ -19,50 +19,116 @@ hierarchy of buildings, access points, and legacy hardware.
 - **State** — AccessState (Normal/Locked) and IncidentState (Reported/ActiveResponse/Resolved)
 
 ## Build and Run (Docker — required for demo)
-```
+
 docker compose up --build
-```
+
 This builds the image from scratch and runs the application. Docker must
 build the image live during the demo — no pre-built local executable is used.
 
 ## Build and Run (local)
-```
+
 make
 ./CampusGuard
-```
+
 
 ## Rebuilding after changes
-```
+
 make clean && make
-```
+
 
 ## Valgrind (inside Docker)
-```
-docker compose run --rm campusguard valgrind --leak-check=full --track-origins=yes ./CampusGuard
-```
+
+docker compose run --rm campusguard valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./CampusGuard
+
 Or locally, using the Makefile's built-in target:
-```
+
 make valgrind
-```
+
+
+**Findings:** The first run identified 4 leaks (72 bytes definitely lost, 1 byte
+indirectly lost), all traced to two root causes:
+- `AccessPoint`'s destructor was empty and never freed its `gate` or `access`
+  members, leaking the `LegacyTurnstileAdapter`/`LegacyTurnstile` and the
+  final `AccessState` object.
+- `OperatorConsole`'s destructor didn't exist, so any `Command` objects still
+  sitting in `history` at program exit were never freed.
+
+Both were fixed by adding proper destructors to `AccessPoint` and
+`OperatorConsole`. A re-run after the fix reports `0 errors from 0 contexts`
+with all heap blocks freed. See the attached before/after screenshots.
 
 ## GDB Investigation
-Start GDB inside the container:
-```
+
+### Symptom
+No visible crash occurs during normal runs, but a real correctness hazard
+exists in the State pattern implementation (`NormalAccessState` /
+`LockedAccessState`).
+
+### Investigation
+A breakpoint was set on `NormalAccessState::lock()` and the program was
+stepped through during the Task 3 lockdown scenario, running inside Docker:
+
 docker compose run --rm campusguard gdb ./CampusGuard
+(gdb) break NormalAccessState::lock
+(gdb) run
+(gdb) next # stepped through to the state-transition line
+
+Execution stopped at `NormalAccessState.cpp:17-18`:
+```cpp
+c->setAccess(new LockedAccessState());
+delete this;
 ```
-See `GDB_INVESTIGATION.md` for the specific bug traced, the commands used,
-and the fix applied.
+After stepping past `delete this`, the pointer was inspected directly:
+
+(gdb) print this
+$1 = (NormalAccessState * const) 0x56a9f47f9450
+
+(gdb) print *this
+$2 = {<AccessState> = {_vptr.AccessState = 0x56a9f47f9}, <No data fields>}
+
+The vtable pointer value returned (`0x56a9f47f9`) is truncated/corrupted
+compared to a normal pointer — direct evidence that this read is pulling
+from memory that has already been freed.
+
+### Root Cause
+`NormalAccessState::lock()` (and symmetrically `LockedAccessState::unlock()`)
+deletes its own `this` pointer immediately after assigning a new state
+object via `setAccess()`. Because `delete` does not null the pointer,
+`this` remains a dangling pointer after this line — any subsequent access to
+it is undefined behavior. The program does not crash on every run only
+because no other allocation happens to reuse that freed memory address
+before the object goes out of scope; this is exactly what makes `delete
+this` bugs dangerous, since they can appear to "work" until memory usage
+patterns change.
+
+### Fix
+Avoid `delete this` in the State pattern entirely. Two safer alternatives:
+1. Have the caller (`AccessPoint` / `Building`) own and manage the lifetime
+   of `AccessState` objects, rather than having states delete themselves.
+2. Use static/singleton instances for each concrete state
+   (`NormalAccessState`, `LockedAccessState`), since they hold no
+   per-instance data (confirmed by `<No data fields>` above). This removes
+   the need to `new`/`delete` on every transition, and is a common
+   real-world implementation of the State pattern for stateless states.
 
 ## Ownership and Memory Management Policy
 - `Building` owns its children (`std::vector<CampusComponent*>`) and deletes
   them in its destructor.
-- `AccessPoint` owns its `AccessGate*` and deletes it in its destructor.
+- `AccessPoint` owns its `AccessGate*` and its `AccessState*`, deleting both
+  in its destructor.
 - `LegacyTurnstileAdapter` owns the wrapped `LegacyTurnstile*` and deletes it
   in its destructor.
-- [Add: who owns ResponseUnit objects, Incident objects, and State objects —
-  fill in once Command/Mediator/State code is finalized.]
+- `OperatorConsole` owns any `Command*` objects remaining in its history and
+  deletes them in its destructor (in addition to deleting each undone
+  command as it's popped).
+- `Incident` owns its current `IncidentState*` and deletes it in its
+  destructor and whenever `setState()` replaces it.
+- Response unit objects (`SecurityTeam`, `MedicalResponder`, etc.) are
+  created and owned by whichever scope constructs them (currently `main`);
+  `ControlCentre` holds non-owning pointers to registered units in its
+  `units` vector.
 
 ## Git/GitHub
-Repository: [link]
+Repository: https://github.com/lostKnot/COS-214---PA5
 All three team members have contributed via commits to their respective
 pattern implementations.
